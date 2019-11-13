@@ -1,0 +1,241 @@
+---
+title: "Fall19-EngageAnalysis"
+author: "Harshitha Bhaskar"
+date: "11/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r} 
+library(tidyverse)
+
+E_Club_Fall_19_data <- read.csv("EventSignIn.csv", header = FALSE, sep = ",")
+
+colnames(E_Club_Fall_19_data) <- c("TimeStamp", "Email", "First_Name", "Last_Name", "Year", "College", "Pronoun", "Ethnicity", "First_Event", "Event_Name", "Source", "T1", "T2", "T3", "T4", "T5", "T6")
+
+E_Club_Fall_19_data <- E_Club_Fall_19_data[-1, -1]
+E_Club_Fall_19_data <- E_Club_Fall_19_data[, -(11:17)]
+
+
+```
+
+Functions
+
+```{r}
+
+data_frame_filter <- function(df, str){
+  filtered_df <- filter(df, str_detect(Event_Name, str))
+  return(filtered_df)
+}
+
+pronoun_chart_drawer <- function(df) {
+  Pie = ggplot(df, aes(x = "", y = Pronoun, fill = Pronoun)) + geom_bar(stat = "identity", width = 1)
+  Pie = Pie + coord_polar("y", start = 0)
+  return(Pie)
+}
+
+attendance_chart_drawer <- function(df) {
+  Pie = ggplot(df, aes(x = "", y = Event_Name, fill = Event_Name)) + geom_bar(stat = "identity", width = 1)
+  Pie = Pie + coord_polar("y", start = 0)
+  return(Pie)
+}
+
+college_chart_drawer <- function(df) {
+  Pie = ggplot(df, aes(x = "", y = College, fill = College)) + geom_bar(stat = "identity", width = 1)
+  Pie = Pie + coord_polar("y", start = 0)
+  return(Pie)
+}
+
+```
+
+**Engage Analysis**
+
+Initialise Engage
+
+Filter E-Club dataframe to reflect only Engage sign-ins
+```{r}
+library(dplyr)
+library(stringr)
+
+Engage_Fall_19_data <- data_frame_filter(E_Club_Fall_19_data, 'Engage')
+```
+
+Individual Engage Attendance
+
+```{r}
+Engage_Stats <- Engage_Fall_19_data %>% group_by(Event_Name) %>% summarise(Event_Count = n())
+
+```
+
+Engage Diversity Pie Chart - Personal Pronoun
+
+```{r}
+pronoun_chart_drawer(Engage_Fall_19_data)
+```
+
+Engage Workshop 1 Diversity Pie Chart - Personal Pronoun
+
+```{r}
+Engage_Pronoun_Data <- filter(Engage_Fall_19_data, str_detect(Pronoun, ""))
+Engage_Diversity_Pie = ggplot(Engage_Pronoun_Data, aes(x = "", y = Pronoun, fill = Engage_Pronoun_Data$Pronoun)) + geom_bar(stat = "identity", width = 1)
+Engage_Diversity_Pie = Engage_Diversity_Pie + coord_polar("y", start = 0)
+Engage_Diversity_Pie
+```
+
+Engage Workshops Attendance Spread Pie Chart
+
+```{r}
+attendance_chart_drawer(Engage_Fall_19_data)
+```
+
+Engage College Diversity Pie Chart
+
+```{r}
+college_chart_drawer(Engage_Fall_19_data)
+```
+
+
+TSS
+
+```{r}
+TSS_Fall_19_data <- data_frame_filter(E_Club_Fall_19_data, 'TSS|Tuesday')
+```
+
+```{r}
+TSS_Stats <- TSS_Fall_19_data %>% group_by(Event_Name) %>% summarise(Event_Count = n())
+```
+
+```{r}
+pronoun_chart_drawer(TSS_Fall_19_data)
+```
+
+```{r}
+
+TSS_Pronoun_Data <- filter(TSS_Fall_19_data, str_detect(Pronoun, ""))
+TSS_Diversity_Pie = ggplot(TSS_Pronoun_Data, aes(x = "", y = Pronoun, fill = TSS_Pronoun_Data$Pronoun)) + geom_bar(stat = "identity", width = 1)
+TSS_Diversity_Pie = TSS_Diversity_Pie + coord_polar("y", start = 0)
+TSS_Diversity_Pie
+
+```
+
+```{r}
+attendance_chart_drawer(TSS_Fall_19_data) #+ scale_fill_manual(values = c("Jason Robins - Tuesday Speaker Series" = "Red", "Mike Massaro - Tuesday Speaker Series" = "Blue", "Rich Paret - Tuesday Speaker Series" = "Green", "TSS - Biology by Design with Reshma Shetty" = "Yellow", "TSS - Nick Leschly" = "Pink", "Tuesday Speaker Series - Polina Raygorodskaya" = "Orange"))
+```
+
+```{r}
+college_chart_drawer(TSS_Fall_19_data)
+```
+
+
+HSC
+
+```{r}
+HSC_Fall_19_data <- data_frame_filter(E_Club_Fall_19_data, 'Husky|HSC')
+```
+
+```{r}
+HSC_Stats <- HSC_Fall_19_data %>% group_by(Event_Name) %>% summarise(Event_Count = n())
+```
+
+```{r}
+pronoun_chart_drawer(HSC_Fall_19_data)
+```
+
+```{r}
+HSC_Diversity_Pie = ggplot(HSC_Fall_19_data, aes(x = "", y = Pronoun, fill = HSC_Fall_19_data$Pronoun)) + geom_bar(stat = "identity", width = 1)
+HSC_Diversity_Pie = HSC_Diversity_Pie + coord_polar("y", start = 0)
+HSC_Diversity_Pie
+```
+
+```{r}
+attendance_chart_drawer(HSC_Fall_19_data)
+```
+
+```{r}
+college_chart_drawer(HSC_Fall_19_data)
+```
+
+
+E-mbassador Program
+
+```{r}
+E_mbassador_Fall_19_Data <- E_Club_Fall_19_data %>% group_by(Email, Last_Name) %>% summarise(Event_Count = n()) %>% filter(Event_Count >4)
+```
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+```{r}
+#pie_chart_drawer <- function(df, col){
+#    Pie = ggplot(df, aes(x = "", y = col, fill = col)) + geom_bar(stat = "identity", width = 1)
+#  Pie = Pie + coord_polar("y", start = 0)
+#  return(Pie)
+#}
+```
+
+```{r}
+#Engage_Fall_19_data <- filter(E_Club_Fall_19_data, str_detect(Event_Name, 'Engage'))
+```
+
+```{r}
+#Engage_Fall_19_data %>% group_by(Email) %>% summarise(Event_Count = n())
+```
+
+```{r}
+#Engage_Diversity_Pie = ggplot(Engage_Fall_19_data, aes(x = "", y = Pronoun, fill = Pronoun)) + geom_bar(stat = "identity", width = 1)
+#Engage_Diversity_Pie = Engage_Diversity_Pie + coord_polar("y", start = 0)
+#Engage_Diversity_Pie
+```
+
+```{r}
+#Engage_Attendance_Pie <- ggplot(Engage_Fall_19_data, aes(x = "", y = Event_Name, fill = Engage_Fall_19_data$Event_Name)) + geom_bar(stat = "identity", width = 1)
+#Engage_Attendance_Pie <- Engage_Attendance_Pie + coord_polar("y", start = 0)
+#Engage_Attendance_Pie
+```
+
+```{r}
+#Engage_Attendance_Pie <- ggplot(Engage_Fall_19_data, aes(x = "", y = College, fill = Engage_Fall_19_data$College)) + geom_bar(stat = "identity", width = 1)
+#Engage_Attendance_Pie <- Engage_Attendance_Pie + coord_polar("y", start = 0)
+#Engage_Attendance_Pie
+```
+
+```{r}
+#TSS_Fall_19_data <- filter(E_Club_Fall_19_data, str_detect(Event_Name, 'TSS|Tuesday'))
+```
+
+```{r}
+#TSS_Diversity_Pie = ggplot(TSS_Fall_19_data, aes(x = "", y = Pronoun, fill = TSS_Fall_19_data$Pronoun)) + geom_bar(stat = "identity", width = 1)
+#TSS_Diversity_Pie = TSS_Diversity_Pie + coord_polar("y", start = 0)
+#TSS_Diversity_Pie
+```
+
+```{r}
+#TSS_Attendance_Data <- filter(TSS_Fall_19_data, str_detect(Event_Name, ""))
+#TSS_Attendance_Pie <- ggplot(TSS_Attendance_Data, aes(x = "", y = Event_Name, fill = TSS_Attendance_Data$Event_Name)) + geom_bar(stat = "identity", width = 1)
+#TSS_Attendance_Pie <- TSS_Attendance_Pie + coord_polar("y", start = 0)
+#TSS_Attendance_Pie
+```
+
+```{r}
+#HSC_Fall_19_data <- filter(E_Club_Fall_19_data, str_detect(Event_Name, 'Husky|HSC'))
+```
+
+```{r}
+#HSC_Diversity_Pie = ggplot(HSC_Fall_19_data, aes(x = "", y = Pronoun, fill = HSC_Fall_19_data$Pronoun)) + geom_bar(stat = "identity", width = 1)
+#HSC_Diversity_Pie = HSC_Diversity_Pie + coord_polar("y", start = 0)
+#HSC_Diversity_Pie
+```
+
+```{r}
+#HSC_Fall_19_data <- filter(HSC_Fall_19_data, str_detect(Pronoun, ""))
+```
+
